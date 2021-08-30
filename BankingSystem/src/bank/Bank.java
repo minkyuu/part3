@@ -1,7 +1,6 @@
 package bank;
 
 import account.Account;
-import account.SavingAccount;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -14,6 +13,8 @@ public class Bank {
     protected static Scanner scanner = new Scanner(System.in);
     protected static int seq = 0;
     public static DecimalFormat df = new DecimalFormat("#,###");
+
+    private HashMap<String, Account> accountList = new HashMap<String, Account>();
 
     // 뱅킹 시스템의 기능들
     public void withdraw() throws Exception {
@@ -60,6 +61,7 @@ public class Bank {
             BigDecimal balance = new BigDecimal(scanner.nextLine());
 
             Account account = new Account(accNo, owner, balance);
+            accountList.put(accNo, account);
 
             //TODO
             System.out.printf("\n%s님 계좌가 발급되었습니다.\n", owner);
@@ -73,6 +75,7 @@ public class Bank {
 
     public Account findAccount(String accNo){
         //TODO: 계좌리스트에서 찾아서 반환하는 메서드 구현
+        Account account = accountList.get(accNo);
 
         return account;
     }
