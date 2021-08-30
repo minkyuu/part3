@@ -54,11 +54,20 @@ public class Bank {
         try {
             // 계좌번호 채번
             // 계좌번호는 "0000"+증가한 seq 포맷을 가진 번호입니다.
+            df = new DecimalFormat("0000");
+            String accNo = df.format(++seq);
+            String owner = scanner.nextLine();
+            BigDecimal balance = new BigDecimal(scanner.nextLine());
+
+            Account account = new Account(accNo, owner, balance);
+
             //TODO
             System.out.printf("\n%s님 계좌가 발급되었습니다.\n", owner);
             return account;
-        }catch (){
+
+        }catch (InputMismatchException e){
             //TODO: 오류 throw
+            throw new InputMismatchException();
         }
     }
 
