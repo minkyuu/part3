@@ -1,11 +1,13 @@
 package bank;
 
 import account.Account;
+import account.SavingAccount;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Bank {
@@ -14,31 +16,64 @@ public class Bank {
     protected static int seq = 0;
     public static DecimalFormat df = new DecimalFormat("#,###");
 
-    private HashMap<String, Account> accountList = new HashMap<String, Account>();
+    protected HashMap<String, Account> accountList = new HashMap<String, Account>();
 
     // 뱅킹 시스템의 기능들
-    public void withdraw() throws Exception {
-        //TODO: 출금 메서드 구현
-        //TODO: key, value 형태의 HashMap을 이용하여 interestCalculators 구현
-        //여기서 key: category, value: 각 category의 InterestCalculator 인스턴스
 
-        // 계좌번호 입력
+    //TODO: 출금 메서드 구현
+    public void withdraw() throws Exception {
+        // TODO: 계좌 조회 (계좌번호 입력)
+        Account account = getAccountByAccNo();
+
+        // TODO: interestCalculators 이용하여 이자 조회 및 출금
+        BigDecimal interest = calculateInterest(account);
+        System.out.printf("이자는 %s원입니다.",interest);
+
+        System.out.println("\n출금할 금액을 입력하세요.");
+        BigDecimal withdrawAmount = new BigDecimal(scanner.nextLine());
+
+        // TODO: 검색 -> 적금 계좌이면 적금 계좌의 출금 메소드 호출 -> 완료시 break
+        try {
+            if (account.getCategory() == "S"){
+                ((SavingBank)this).withdraw((SavingAccount) account);
+            } else {
+                account.withdraw(withdrawAmount);   // 출금처리
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Account getAccountByAccNo() {
         Account account;
         while(true){
             System.out.println("\n출금하시려는 계좌번호를 입력하세요.");
-            String accNo = scanner.next();
-            // TODO: 검색 -> 적금 계좌이면 적금 계좌의 출금 메소드 호출 -> 완료시 break
+            String accNo = scanner.nextLine();
 
+            try {
+                account = findAccount(accNo);
+                break;
+            } catch (NoSuchElementException e) {
+                System.out.println("입력한 계좌번호와 동일한 계좌가 존재하지 않습니다.");
+            }
         }
-        // 출금처리
-        System.out.println("\n출금할 금액을 입력하세요.");
-        // TODO: interestCalculators 이용하 이자 조회 및 출금
-        try {
-
-        }catch (Exception e){
-
-        }
+        return account;
     }
+
+
+    private BigDecimal calculateInterest(Account account) {
+        //TODO: key, value 형태의 HashMap을 이용하여 interestCalculators 구현
+        //여기서 key: category, value: 각 category의 InterestCalculator 인스턴스
+        HashMap<String, InterestCalculator> interestCalculators = new HashMap<String, InterestCalculator>();
+        interestCalculators.put("N", new BasicInterestCalculator());
+        interestCalculators.put("S", new SavingInterestCalculator());
+        InterestCalculator interestCalculator = interestCalculators.get(account.getCategory());
+
+        // interest 계산 후 반환
+        BigDecimal result = interestCalculator.getInterest(account.getBalance());
+        return result;
+    }
+
 
     public void deposit(){
         //TODO: 입금 메서드 구현
@@ -73,9 +108,11 @@ public class Bank {
         }
     }
 
-    public Account findAccount(String accNo){
+    public Account findAccount(String accNo) throws NoSuchElementException {
         //TODO: 계좌리스트에서 찾아서 반환하는 메서드 구현
         Account account = accountList.get(accNo);
+        if (account == null)
+            throw new NoSuchElementException();
 
         return account;
     }
