@@ -2,13 +2,12 @@ package bank;
 
 import account.Account;
 import account.SavingAccount;
+import account.TransferToMyAccountException;
+import account.UnableTranferBySavingAccountException;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 
 public class Bank {
     //TODO: Bank 클래스는 출금, 입금, 송금, 계좌 생성, 계좌 검색 기능들을 갖고 있습니다.
@@ -16,7 +15,7 @@ public class Bank {
     protected static int seq = 0;
     public static DecimalFormat df = new DecimalFormat("#,###");
 
-    protected HashMap<String, Account> accountList = new HashMap<String, Account>();
+    protected ArrayList<Account> accountList = CentralBank.getInstance().getAccountList();
 
     // 뱅킹 시스템의 기능들
 
@@ -27,14 +26,14 @@ public class Bank {
 
         // TODO: interestCalculators 이용하여 이자 조회 및 출금
         BigDecimal interest = calculateInterest(account);
-        System.out.printf("이자는 %s원입니다.",interest);
+        System.out.printf("\n이자는 %s원입니다.\n",interest);
 
         System.out.println("\n출금할 금액을 입력하세요.");
         BigDecimal withdrawAmount = new BigDecimal(scanner.nextLine());
 
         // TODO: 검색 -> 적금 계좌이면 적금 계좌의 출금 메소드 호출 -> 완료시 break
         try {
-            if (account.getCategory() == "S"){
+            if (account.getCategory().equals("S")){
                 ((SavingBank)this).withdraw((SavingAccount) account);
             } else {
                 account.withdraw(withdrawAmount);   // 출금처리
@@ -58,57 +57,75 @@ public class Bank {
     public Account createAccount() throws InputMismatchException {
         //TODO: 계좌 생성하는 메서드 구현
         try {
-            // 계좌번호 채번
-            // 계좌번호는 "0000"+증가한 seq 포맷을 가진 번호입니다.
+            // 계좌번호 채번 (계좌번호는 "0000"+증가한 seq 포맷을 가진 번호)
             df = new DecimalFormat("0000");
             String accNo = df.format(++seq);
+
+            System.out.print("이름을 입력해주세요 : ");
             String owner = scanner.nextLine();
+
+            System.out.print("생성 계좌에 입금할 금액을 입력해주세요 : ");
             BigDecimal balance = new BigDecimal(scanner.nextLine());
 
             Account account = new Account(accNo, owner, balance);
-            accountList.put(accNo, account);
+            accountList.add(account);
 
-            //TODO
-            System.out.printf("\n%s님 계좌가 발급되었습니다.\n", owner);
+            System.out.printf("%s님 계좌가 발급되었습니다.\n\n", owner);
             return account;
 
         }catch (InputMismatchException e){
             //TODO: 오류 throw
+            seq--;
             throw new InputMismatchException();
         }
     }
 
     public Account findAccount(String accNo) throws NoSuchElementException {
         //TODO: 계좌리스트에서 찾아서 반환하는 메서드 구현
-        Account account = accountList.get(accNo);
+        Account account = searchAccount(accNo);
+
         if (account == null)
             throw new NoSuchElementException();
 
         return account;
     }
 
+    private Account searchAccount(String accNo) {
+        Account account = null;
+        for (int i = 0; i < accountList.size(); i++) {
+            Account checkAccount = accountList.get(i);
+            if(checkAccount.getAccNo().equals(accNo))
+                return checkAccount;
+        }
+        return account;
+    }
+
     public void transfer() throws Exception{
         //TODO: 송금 메서드 구현
         // 잘못 입력하거나 예외처리시 다시 입력가능하도록
-        //TODO
-        System.out.println("\n송금하시려는 계좌번호를 입력해주세요.");
-        //TODO
-        System.out.println("\n어느 계좌번호로 보내시려나요?");
-        //TODO
-        System.out.println("\n본인 계좌로의 송금은 입금을 이용해주세요.");
-        //TODO
-        System.out.println("\n적금 계좌로는 송금이 불가합니다.");
-        //TODO
+
+        Account senderAccount = getAccountByAccNo("송금");
+        if (senderAccount.getCategory().equals("S")) {
+            System.out.println("\n적금 계좌로는 송금이 불가합니다.");
+            throw new UnableTranferBySavingAccountException();
+        }
+
+        Account receiverAccount = getAccountByAccNo("송금 받고자 ");
+        if (senderAccount.getAccNo().equals(receiverAccount.getAccNo())) {
+            System.out.println("\n본인 계좌로의 송금은 입금을 이용해주세요.");
+            throw new TransferToMyAccountException();
+        }
+
         System.out.println("\n송금할 금액을 입력하세요.");
-        //TODO
+        BigDecimal transferAmount = new BigDecimal(scanner.nextLine());
+        receiverAccount.deposit(senderAccount.withdraw(transferAmount));
     }
 
     private Account getAccountByAccNo(String command) {
         Account account;
         while(true){
-            System.out.printf("%s하시려는 계좌번호를 입력하세요.\n", command);
+            System.out.printf("\n%s하시려는 계좌번호를 입력하세요.\n", command);
             String accNo = scanner.nextLine();
-
             try {
                 account = findAccount(accNo);
                 break;
