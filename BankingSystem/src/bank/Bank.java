@@ -28,14 +28,14 @@ public class Bank {
         BigDecimal interest = calculateInterest(account);
         System.out.printf("\n이자는 %s원입니다.\n",interest);
 
-        System.out.println("\n출금할 금액을 입력하세요.");
-        BigDecimal withdrawAmount = new BigDecimal(scanner.nextLine());
-
         // TODO: 검색 -> 적금 계좌이면 적금 계좌의 출금 메소드 호출 -> 완료시 break
         try {
             if (account.getCategory().equals("S")){
                 ((SavingBank)this).withdraw((SavingAccount) account);
             } else {
+                System.out.println("\n출금할 금액을 입력하세요.");
+                BigDecimal withdrawAmount = new BigDecimal(scanner.nextLine());
+
                 account.withdraw(withdrawAmount);   // 출금처리
             }
         } catch (Exception e) {
