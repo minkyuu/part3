@@ -1,4 +1,4 @@
-package account;
+package account.exception;
 
 public class BalanceEmptyException extends RuntimeException {
 

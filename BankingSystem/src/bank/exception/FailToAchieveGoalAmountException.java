@@ -1,4 +1,4 @@
-package account;
+package bank.exception;
 
 public class FailToAchieveGoalAmountException extends RuntimeException {
     public FailToAchieveGoalAmountException() {

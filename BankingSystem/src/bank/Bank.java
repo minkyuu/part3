@@ -2,8 +2,8 @@ package bank;
 
 import account.Account;
 import account.SavingAccount;
-import account.TransferToMyAccountException;
-import account.UnableTranferBySavingAccountException;
+import bank.exception.TransferToMyAccountException;
+import bank.exception.UnableTranferBySavingAccountException;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;

@@ -1,6 +1,6 @@
 package bank;
 
-import account.FailToAchieveGoalAmountException;
+import bank.exception.FailToAchieveGoalAmountException;
 import account.SavingAccount;
 
 import java.math.BigDecimal;
