@@ -49,7 +49,7 @@ public class Account {
 
         BigDecimal newBalance = this.balance.subtract(amount);
         setBalance(newBalance);
-        System.out.printf("계좌에서 %s원이 출금되었습니다. (현재 잔액 : %s원)\n", amount, newBalance);
+        System.out.printf("%s님 계좌에서 %s원이 출금되었습니다. (현재 잔액 : %s원)\n", this.owner, amount, newBalance);
 
         return amount;
     }
