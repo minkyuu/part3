@@ -48,7 +48,7 @@ public class SavingAccount extends Account{
         BigDecimal newBalance = this.balance.add(amount);
         setBalance(newBalance);
 
-        if (newBalance.compareTo(goalAmount) == 1)
+        if (newBalance.compareTo(goalAmount) != -1)
             System.out.println("축하드립니다. 목표 금액을 달성하셨습니다!");
 
         return amount;
