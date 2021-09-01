@@ -31,17 +31,16 @@ public class SavingAccount extends Account{
     }
 
     //TODO: getAccountInfo를 재정의하여 "목표 금액"도 노출해줍니다.
-    public void getAccountInfo(SavingAccount savingAccount) {
+    public void getAccountInfo(Account account) {
         //TODO
-        String category = savingAccount.getCategory();
-        String accNo = savingAccount.getAccNo();
-        String owner = savingAccount.getOwner();
-        BigDecimal balance = savingAccount.getBalance();
-        BigDecimal goalAmount = savingAccount.getGoalAmount();
+        String category = account.getCategory();
+        String accNo = account.getAccNo();
+        String owner = account.getOwner();
+        BigDecimal balance = account.getBalance();
+        BigDecimal goalAmount = ((SavingAccount) account).getGoalAmount();
 
         System.out.printf("계좌종류: %s | 계좌번호: %s | 계좌주명: %s | 잔액: %s원 | 목표 금액: %s원\n", category, accNo, owner, balance, goalAmount);
     }
-
 
     // 목표 금액을 달성할 경우
     @Override
