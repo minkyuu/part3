@@ -16,7 +16,6 @@ public class SavingAccount extends Account{
     }
 
     public SavingAccount(String accNo, String owner, BigDecimal balance, BigDecimal goalAmount) {
-        // TODO
         this.category = "S";
         this.accNo = accNo;
         this.owner = owner;
@@ -32,23 +31,16 @@ public class SavingAccount extends Account{
 
     //TODO: getAccountInfo를 재정의하여 "목표 금액"도 노출해줍니다.
     public void getAccountInfo(Account account) {
-        //TODO
-        String category = account.getCategory();
-        String accNo = account.getAccNo();
-        String owner = account.getOwner();
-        BigDecimal balance = account.getBalance();
-        BigDecimal goalAmount = ((SavingAccount) account).getGoalAmount();
-
-        System.out.printf("계좌종류: %s | 계좌번호: %s | 계좌주명: %s | 잔액: %s원 | 목표 금액: %s원\n", category, accNo, owner, balance, goalAmount);
+        System.out.printf("계좌종류: %s | 계좌번호: %s | 계좌주명: %s | 잔액: %s원 | 목표 금액: %s원\n", account.getCategory(), account.getAccNo(), account.getOwner(), account.getBalance(), ((SavingAccount) account).getGoalAmount());
     }
 
     // 목표 금액을 달성할 경우
     @Override
     public BigDecimal deposit(BigDecimal amount) {
-        BigDecimal newBalance = this.balance.add(amount);
-        setBalance(newBalance);
+        amount = checkAmount(amount, "입금");
+        setBalance(this.balance.add(amount));
 
-        if (newBalance.compareTo(goalAmount) != -1)
+        if (this.balance.compareTo(goalAmount) != -1)
             System.out.println("축하드립니다. 목표 금액을 달성하셨습니다!");
 
         return amount;

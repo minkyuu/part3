@@ -4,6 +4,7 @@ import account.exception.BalanceEmptyException;
 import account.exception.LackofBalanceException;
 
 import java.math.BigDecimal;
+import java.util.Scanner;
 
 public class Account {
     //TODO: 일반 계좌 클래스의 속성은 계좌종류(N: 예금계좌, S:적금계좌), 계좌번호, 소유자, 잔액, 활성화 여부 5가지 입니다.
@@ -30,12 +31,8 @@ public class Account {
     public void getAccountInfo(Account account){
         //TODO: 계좌의 기본 정보를 아래 형태로 출력해줍니다.
         //계좌종류: %s | 계좌번호: %s | 계좌주명: %s | 잔액: %s원
-        String category = account.getCategory();
-        String accNo = account.getAccNo();
-        String owner = account.getOwner();
-        BigDecimal balance = account.getBalance();
 
-        System.out.printf("계좌종류: %s | 계좌번호: %s | 계좌주명: %s | 잔액: %s원\n", category, accNo, owner, balance);
+        System.out.printf("계좌종류: %s | 계좌번호: %s | 계좌주명: %s | 잔액: %s원\n", account.getCategory(), account.getAccNo(), account.getOwner(), account.getBalance());
     }
 
     public BigDecimal withdraw(BigDecimal amount) throws Exception{
@@ -47,19 +44,32 @@ public class Account {
         if (this.balance.compareTo(amount) == -1){
             throw new LackofBalanceException("잔액이 부족합니다.");
         }
+        amount = checkAmount(amount, "출금");
 
-        BigDecimal newBalance = this.balance.subtract(amount);
-        setBalance(newBalance);
-        System.out.printf("%s님 계좌에서 %s원이 출금되었습니다. (현재 잔액 : %s원)\n", this.owner, amount, newBalance);
+        setBalance(this.balance.subtract(amount));
+        System.out.printf("%s님 계좌에서 %s원이 출금되었습니다. (현재 잔액 : %s원)\n", this.owner, amount, this.balance);
 
         return amount;
     }
 
+
     public BigDecimal deposit(BigDecimal amount){
         //TODO: 입금액을 받아서 입금하는 기본 메소드입니다. this를 이용해 구현해보세요.
-        BigDecimal newBalance = this.balance.add(amount);
-        setBalance(newBalance);
+        amount = checkAmount(amount, "입금");
 
+        setBalance(this.balance.add(amount));
+
+        return amount;
+    }
+
+    protected BigDecimal checkAmount(BigDecimal amount, String command) {
+        if (amount.compareTo(BigDecimal.ZERO) < 1){
+            Scanner scanner = new Scanner(System.in);
+            while(amount.compareTo(BigDecimal.ZERO) < 1){
+                System.out.printf("입력 금액이 0원보다 작거나 같습니다. %s할 금액을 다시 입력해주세요.\n",command);
+                amount = new BigDecimal(scanner.nextLine());
+            }
+        }
         return amount;
     }
 
