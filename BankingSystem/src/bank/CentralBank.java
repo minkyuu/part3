@@ -9,7 +9,7 @@ public class CentralBank {
     //TODO: 싱글톤 패턴으로 설계합니다.
     //TODO: accountList(Account로 이루어진 ArrayList)
     //TODO: BANK_NAME(은행명)
-    private static CentralBank centralBank = new CentralBank();
+    private static CentralBank centralBank = null;
 
     private static final String BANK_NAME = "MKBank";
     private ArrayList<Account> accountList = new ArrayList<Account>();
